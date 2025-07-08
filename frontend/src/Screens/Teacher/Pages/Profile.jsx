@@ -146,25 +146,27 @@ const [snackbar, setSnackbar] = useState({
     <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
       <Sidebar />
       
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          ml: '240px', // Match sidebar width
-          height: '100vh',
-          overflowY: 'auto',
-          '&::-webkit-scrollbar': {
-            width: '0.4em'
-          },
-          '&::-webkit-scrollbar-track': {
-            background: '#f1f1f1'
-          },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: '#888'
-          }
-        }}
-      >
+     <Box
+  component="main"
+  sx={{
+    flexGrow: 1,
+    p: { xs: 2, sm: 2, md: 3 },
+    ml: { xs: 0, md: '240px' },
+    mt: { xs: '64px', md: 0 },
+    height: '100vh',
+    overflowY: 'auto',
+    '&::-webkit-scrollbar': {
+      width: '0.4em'
+    },
+    '&::-webkit-scrollbar-track': {
+      background: '#f1f1f1'
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#888'
+    }
+  }}
+>
+
         <Paper 
           sx={{ 
             p: 4, 
@@ -181,7 +183,19 @@ const [snackbar, setSnackbar] = useState({
             <Typography color="error" sx={{ p: 2 }}>{error}</Typography>
           ) : teacherData ? (
             <Grid container spacing={4}>
-              <Grid item xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+             <Grid 
+  item 
+  xs={12} 
+  md={4} 
+  sx={{ 
+    display: 'flex', 
+    flexDirection: 'column', 
+    alignItems: 'center', 
+    textAlign: { xs: 'center', md: 'left' }, 
+    mb: { xs: 2, md: 0 } 
+  }}
+>
+
                 <Avatar 
                   sx={{ 
                     width: 150, 

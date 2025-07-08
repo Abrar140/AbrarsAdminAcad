@@ -595,12 +595,19 @@ const Grade = () => {
   };
   
 
-  const modalStyle = {
-    position: 'absolute', top: '50%', left: '50%',
-    transform: 'translate(-50%, -50%)', width: 500,
-    bgcolor: 'background.paper', borderRadius: 2,
-    boxShadow: 24, p: 4,
-  };
+ const modalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: { xs: '90%', sm: 500 },
+  bgcolor: 'background.paper',
+  borderRadius: 2,
+  boxShadow: 24,
+  p: { xs: 2, sm: 4 },
+};
+
+
 
   const filteredAssignments = assignments.filter(
     (assignment) =>
@@ -612,22 +619,36 @@ const Grade = () => {
     <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
       <Sidebar />
       <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          ml: '240px',
-          height: '100vh',
-          overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
+  component="main"
+  sx={{
+    flexGrow: 1,
+    p: { xs: 2, sm: 2, md: 3 },
+    ml: { xs: 0, md: '240px' },
+    mt: { xs: '64px', md: 0 },
+    height: '100vh',
+    overflowY: 'auto',
+    display: 'flex',
+    flexDirection: 'column',
+  }}
+>
+
         <Box sx={{ flexGrow: 1 }}>
           {!selectedAssignment ? (
             <Grid container spacing={3} sx={{ mb: 3 }}>
               <Grid item xs={12}>
-              <Box sx={{ color: '#1a1a2e', mb: 3 , display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+             <Box
+  sx={{
+    color: '#1a1a2e',
+    mb: 3,
+    display: 'flex',
+    flexDirection: { xs: 'column', sm: 'row' },
+    alignItems: { xs: 'flex-start', sm: 'center' },
+    justifyContent: 'space-between',
+    gap: 2
+  }}
+>
+
+
                  <Box sx={{ display: 'flex', gap: 1 }}>
                  <IconButton onClick={() => navigate(-1)} sx={{ color: theme.palette.primary.main, mr: 2, fontSize: 'medium' }}>
                   <ArrowBackIcon fontSize="large" />
@@ -636,15 +657,21 @@ const Grade = () => {
     Assignment & Grade Management
   </Typography>
  </Box>
-    <Button
-      variant="contained"
-      startIcon={<AddIcon />}
-      onClick={handleOpenModal}
-      sx={{ backgroundColor: theme.palette.primary.main, '&:hover': { backgroundColor: '#0069ee' } }}
-      disabled={uploadingAssignment}
-    >
-      {uploadingAssignment ? 'Uploading...' : 'Create Assignment'}
-    </Button>
+   <Button
+  variant="contained"
+  startIcon={<AddIcon />}
+  onClick={handleOpenModal}
+  sx={{
+    backgroundColor: theme.palette.primary.main,
+    '&:hover': { backgroundColor: '#0069ee' },
+    width: { xs: '100%', sm: 'auto' },
+    alignSelf: { xs: 'center', sm: 'auto' }
+  }}
+  disabled={uploadingAssignment}
+>
+  {uploadingAssignment ? 'Uploading...' : 'Create Assignment'}
+</Button>
+
    
   
   
@@ -867,10 +894,15 @@ const Grade = () => {
         {/* Modal */}
        <Modal open={openModal} onClose={handleCloseModal}>
   <Box sx={modalStyle}>
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-      <Typography variant="h6">Create Assignment</Typography>
-      <IconButton onClick={handleCloseModal}><CloseIcon /></IconButton>
-    </Box>
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 2, position: 'relative' }}>
+  <Typography variant="h6" sx={{ fontWeight: 'bold', textAlign: 'center', flex: 1 }}>
+    Create Assignment
+  </Typography>
+  <IconButton onClick={handleCloseModal} sx={{ position: 'absolute', right: 0 }}>
+    <CloseIcon />
+  </IconButton>
+</Box>
+
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <TextField label="Name" name="name" value={formData.name} onChange={handleInputChange} required />
       <FormControl fullWidth margin="normal">

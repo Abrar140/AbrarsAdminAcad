@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 
-// Sidebar.jsx with professional theme
-import { useState} from "react"
+// Sidebar.jsx with professional theme and mobile responsiveness matching Dashboard.jsx
+import { useState, useEffect } from "react"
 import {
   Box,
   List,
@@ -15,8 +15,13 @@ import {
   Divider,
   useTheme,
   alpha,
+  useMediaQuery,
+  IconButton,
+  Drawer,
+  AppBar,
+  Toolbar,
 } from "@mui/material"
-import { LayoutDashboard, Bell, User, Receipt, LogOut, GraduationCap, ChevronRight } from "lucide-react"
+import { LayoutDashboard, Bell, User, Receipt, LogOut, GraduationCap, ChevronRight, Menu, X } from "lucide-react"
 import { useNavigate, useLocation } from "react-router-dom"
 import supabase from "../../../../supabase-client.js"
 
@@ -24,6 +29,9 @@ const Sidebar = () => {
   const theme = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const [mobileOpen, setMobileOpen] = useState(false)
+  
   // eslint-disable-next-line no-unused-vars
   const [userName, setUserName] = useState("")
   const [userRole, setUserRole] = useState("Teacher")
@@ -38,7 +46,17 @@ const Sidebar = () => {
     return "dashboard"
   })
 
- 
+  // Close mobile drawer when route changes
+  useEffect(() => {
+    if (isMobile) {
+      setMobileOpen(false)
+    }
+  }, [location.pathname, isMobile])
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen)
+  }
+
   const handleItemClick = (value) => {
     setSelected(value)
     switch (value) {
@@ -51,7 +69,10 @@ const Sidebar = () => {
       case "profile":
         navigate("/teacher/profile")
         break
-     
+    }
+    // Close mobile drawer after navigation
+    if (isMobile) {
+      setMobileOpen(false)
     }
   }
 
@@ -73,28 +94,43 @@ const Sidebar = () => {
     { text: "Dashboard", icon: <LayoutDashboard size={20} />, value: "dashboard" },
     { text: "Notifications", icon: <Bell size={20} />, value: "notifications" },
     { text: "Profile", icon: <User size={20} />, value: "profile" },
-    
   ]
 
-  return (
-    <Paper
-      elevation={3}
+  const sidebarContent = (
+    <Box
       sx={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        height: "100vh",
-        width: "240px",
+        height: "100%",
         bgcolor: "#0a1f44",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        borderRight: "1px solid rgba(255, 255, 255, 0.1)",
-        zIndex: 1200,
-        overflow: "hidden",
+        width: isMobile ? "280px" : "240px",
       }}
     >
       <Box>
+        {/* Mobile Header with Close Button */}
+        {isMobile && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              p: 2,
+              borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+            }}
+          >
+            <Typography variant="h6" sx={{ color: "white", fontWeight: 600 }}>
+              Menu
+            </Typography>
+            <IconButton
+              onClick={handleDrawerToggle}
+              sx={{ color: "white" }}
+            >
+              <X size={24} />
+            </IconButton>
+          </Box>
+        )}
+
         <Box
           sx={{
             p: 3,
@@ -146,7 +182,7 @@ const Sidebar = () => {
         <Box sx={{ p: 2, mt: 1 }}>
           <List>
             {menuItems.map(({ text, icon, value }) => (
-              <Tooltip title={text} placement="right" key={value}>
+              <Tooltip title={text} placement="right" key={value} disableHoverListener={isMobile}>
                 <ListItem
                   className="cursor-pointer"
                   button
@@ -203,7 +239,7 @@ const Sidebar = () => {
 
       <Box sx={{ p: 2, mt: "auto" }}>
         <Divider sx={{ bgcolor: alpha("#ffffff", 0.1), my: 2 }} />
-        <Tooltip title="Logout" placement="right">
+        <Tooltip title="Logout" placement="right" disableHoverListener={isMobile}>
           <ListItem
             className="cursor-pointer"
             button
@@ -231,7 +267,84 @@ const Sidebar = () => {
           </ListItem>
         </Tooltip>
       </Box>
-    </Paper>
+    </Box>
+  )
+
+  return (
+    <>
+      {/* Mobile App Bar - Fixed at top */}
+      {isMobile && (
+        <AppBar
+          position="fixed"
+          sx={{
+            bgcolor: "#0a1f44",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+            zIndex: theme.zIndex.drawer + 1,
+            height: 64, // Standard app bar height
+          }}
+        >
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2 }}
+            >
+              <Menu />
+            </IconButton>
+            <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+              Teacher Portal
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      {/* Desktop Sidebar */}
+      {!isMobile && (
+        <Paper
+          elevation={3}
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            height: "100vh",
+            width: "240px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            borderRight: "1px solid rgba(255, 255, 255, 0.1)",
+            zIndex: 1200,
+            overflow: "hidden",
+          }}
+        >
+          {sidebarContent}
+        </Paper>
+      )}
+
+      {/* Mobile Drawer */}
+      {isMobile && (
+        <Drawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile
+          }}
+          sx={{
+            display: { xs: 'block', md: 'none' },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: 280,
+              border: 'none',
+              zIndex: theme.zIndex.drawer,
+            },
+          }}
+        >
+          {sidebarContent}
+        </Drawer>
+      )}
+    </>
   )
 }
 

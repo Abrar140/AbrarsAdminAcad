@@ -237,13 +237,33 @@ const TeacherNotifications = () => {
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
       <Sidebar />
-      <Box component="main" sx={{ flexGrow: 1, p: { xs: 2, md: 3, lg: 4 }, ml: '240px', overflowY: 'auto' }}>
+      <Box
+  component="main"
+  sx={{
+    flexGrow: 1,
+    p: { xs: 2, sm: 2, md: 3, lg: 4 },
+    ml: { xs: 0, md: '240px' },
+    mt: { xs: '64px', md: 0 },
+    overflowY: 'auto',
+  }}
+>
+
         <Typography variant="h4" sx={{ fontWeight: 700, mb: 3, color: theme.palette.text.primary }}>
           Notifications and Announcements
         </Typography>
 
         {/* Filter Controls */}
-        <Box sx={{ mb: 3, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+        <Box
+  sx={{
+    mb: 3,
+    display: 'flex',
+    flexDirection: { xs: 'column', sm: 'row' },
+    gap: 2,
+    flexWrap: 'wrap',
+    alignItems: { xs: 'stretch', sm: 'center' }
+  }}
+>
+
           <FormControl sx={{ minWidth: 120 }}>
             <InputLabel>Month</InputLabel>
             <Select
@@ -276,7 +296,7 @@ const TeacherNotifications = () => {
             </Select>
           </FormControl>
 
-          <Box sx={{ flex: 1, display: 'flex', minWidth: 300 }}>
+          <Box sx={{ flex: 1, display: 'flex', minWidth: { xs: '100%', sm: 300 } }}>
             <InputBase
               placeholder="Search Notifications"
               value={searchQuery}

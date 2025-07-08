@@ -1,11 +1,10 @@
 /* eslint-disable no-unused-vars */
-// Updated Attendance.jsx UI consistent with Sidebar and Dashboard
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead,
   TableRow, Radio, RadioGroup, FormControlLabel, Button, CircularProgress,
-  Snackbar, Alert, TextField, IconButton, useTheme, alpha
+  Snackbar, Alert, TextField, IconButton, useTheme, useMediaQuery
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
@@ -17,6 +16,8 @@ const Attendance = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
   const classInfo = location.state?.classInfo;
 
   const [students, setStudents] = useState([]);
@@ -119,16 +120,37 @@ const Attendance = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh',  backgroundColor: '#f0f2f5' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
       <Sidebar />
-      <Box component="main" sx={{ flexGrow: 1, p: { xs: 2, md: 3, lg: 4 }, ml: '240px', overflowY: 'auto' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-          <IconButton onClick={() => navigate(-1)} sx={{ color: theme.palette.primary.main, mr: 2, fontSize: 'medium' }}>
-            <ArrowBackIcon fontSize="large" />
-          </IconButton>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: theme.palette.text.primary }}>
-            Attendance Management
-          </Typography>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: { xs: 2, sm: 2, md: 3 },
+          ml: { xs: 0, md: '240px' }, // Respect mobile sidebar
+          mt: { xs: '64px', md: 0 }, // Space for mobile AppBar
+          width: '100%',
+          overflowY: 'auto'
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            mb: 3,
+            gap: 2
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <IconButton onClick={() => navigate(-1)} sx={{ color: theme.palette.primary.main, mr: 1 }}>
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography variant="h5" sx={{ fontWeight: 700 }}>
+              Attendance Management
+            </Typography>
+          </Box>
         </Box>
 
         {loading ? (
@@ -137,7 +159,7 @@ const Attendance = () => {
           </Box>
         ) : (
           <>
-            <Box sx={{ display: 'flex', gap: 3, mb: 3 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3, mb: 3 }}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
                   label="Select Attendance Date"
@@ -163,7 +185,7 @@ const Attendance = () => {
                     <TableRow>
                       <TableCell>Roll No</TableCell>
                       <TableCell>Name</TableCell>
-                      <TableCell >Attendance</TableCell>
+                      <TableCell>Attendance</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -172,7 +194,7 @@ const Attendance = () => {
                         <TableRow key={student.id}>
                           <TableCell>{student.registration_no}</TableCell>
                           <TableCell>{student.full_name}</TableCell>
-                          <TableCell align="center">
+                          <TableCell>
                             <RadioGroup
                               row
                               value={attendanceState[student.registration_no] || ''}

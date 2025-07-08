@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
-// Updated StudyMaterial.jsx UI consistent with Sidebar and Dashboard
+// Updated StudyMaterial.jsx UI consistent with Sidebar and Dashboard - Mobile Responsive
 import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Button, Paper, InputBase, IconButton, Divider, List,
   ListItem, ListItemText, ListItemIcon, ListItemSecondaryAction, Chip,
   Modal, TextField, Snackbar, Alert, CircularProgress, Dialog, DialogActions,
-  DialogContent, DialogContentText, DialogTitle, useTheme, alpha
+  DialogContent, DialogContentText, DialogTitle, useTheme, alpha, useMediaQuery
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
@@ -37,7 +37,7 @@ const StudyMaterial = () => {
   const location = useLocation();
   const classInfo = location.state?.classInfo;
   const theme = useTheme();
-
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -96,7 +96,6 @@ const StudyMaterial = () => {
     material.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (material.description?.toLowerCase() || '').includes(searchQuery.toLowerCase())
   );
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -171,21 +170,63 @@ const StudyMaterial = () => {
     setDeleteDialog(true);
   };
 
- const modalStyle = {
-    position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-    width: 500, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 24, p: 4
+  const modalStyle = {
+    position: 'absolute', 
+    top: '50%', 
+    left: '50%', 
+    transform: 'translate(-50%, -50%)',
+    width: isMobile ? '90%' : 500, 
+    maxWidth: isMobile ? '400px' : '500px',
+    bgcolor: 'background.paper', 
+    borderRadius: 2, 
+    boxShadow: 24, 
+    p: isMobile ? 2 : 4,
+    maxHeight: '90vh',
+    overflowY: 'auto'
   };
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
       <Sidebar />
-      <Box component="main" sx={{ flexGrow: 1, p: { xs: 2, md: 3, lg: 4 }, ml: '240px', overflowY: 'auto' }}>
-        <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <IconButton onClick={() => navigate(-1)} sx={{ color: theme.palette.primary.main, mr: 2, fontSize: 'medium' }}>
+      <Box 
+        component="main" 
+        sx={{ 
+          flexGrow: 1, 
+          p: { xs: 2, sm: 2, md: 3, lg: 4 }, 
+          ml: { xs: 0, md: '240px' }, // No left margin on mobile
+          mt: { xs: '64px', md: 0 }, // Add top margin on mobile for app bar
+          overflowY: 'auto',
+          width: { xs: '100%', md: 'calc(100% - 240px)' }
+        }}
+      >
+        {/* Header Section */}
+        <Box sx={{ 
+          mb: { xs: 2, md: 4 }, 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: { xs: 2, sm: 0 }
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', width: { xs: '100%', sm: 'auto' } }}>
+            <IconButton 
+              onClick={() => navigate(-1)} 
+              sx={{ 
+                color: theme.palette.primary.main, 
+                mr: { xs: 1, sm: 2 }, 
+                fontSize: 'medium' 
+              }}
+            >
               <ArrowBackIcon fontSize="large" />
             </IconButton>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: theme.palette.text.primary }}>
+            <Typography 
+              variant={isMobile ? "h5" : "h4"} 
+              sx={{ 
+                fontWeight: 700, 
+                color: theme.palette.text.primary,
+                fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' }
+              }}
+            >
               Study Materials
             </Typography>
           </Box>
@@ -198,6 +239,8 @@ const StudyMaterial = () => {
               textTransform: 'none',
               borderRadius: 2,
               fontWeight: 600,
+              width: { xs: '100%', sm: 'auto' },
+              minWidth: { xs: 'auto', sm: '140px' },
               '&:hover': { bgcolor: theme.palette.primary.dark },
             }}
           >
@@ -205,50 +248,140 @@ const StudyMaterial = () => {
           </Button>
         </Box>
 
+        {/* Search Section */}
         <Paper
           component="form"
-          sx={{ p: '2px 8px', mb: 3, display: 'flex', alignItems: 'center', borderRadius: 2, boxShadow: 1 }}
+          sx={{ 
+            p: { xs: '6px 12px', sm: '8px 16px' }, 
+            mb: { xs: 2, md: 3 }, 
+            display: 'flex', 
+            alignItems: 'center', 
+            borderRadius: 2, 
+            boxShadow: 1 
+          }}
           onSubmit={e => e.preventDefault()}
         >
           <InputBase
-            sx={{ ml: 1, flex: 1 }}
+            sx={{ ml: 1, flex: 1, fontSize: { xs: '0.875rem', sm: '1rem' } }}
             placeholder="Search study materials by name or description"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <IconButton type="button" sx={{ p: '10px', color: theme.palette.primary.main }}>
+          <IconButton 
+            type="button" 
+            sx={{ 
+              p: { xs: '6px', sm: '10px' }, 
+              color: theme.palette.primary.main 
+            }}
+          >
             <SearchIcon />
           </IconButton>
         </Paper>
 
+        {/* Materials List */}
         {loadingResources ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <CircularProgress />
+          </Box>
         ) : (
-          <Paper sx={{ width: '100%', borderRadius: 2, boxShadow: 1 }}>
-            <List>
+          <Paper sx={{ 
+            width: '100%', 
+            borderRadius: 2, 
+            boxShadow: 1,
+            overflow: 'hidden' 
+          }}>
+            <List sx={{ p: 0 }}>
               {filteredMaterials.map((material, index) => (
                 <React.Fragment key={material.id}>
-                  <ListItem>
-                    <ListItemIcon>{getFileIcon(material.file_url)}</ListItemIcon>
-                    <ListItemText
-                      primary={material.name}
-                      secondary={material.description || 'No description'}
-                    />
-                    <Chip label={classInfo.subjects.subject_name} size="small" sx={{ mr: 6 }} />
-                    <ListItemSecondaryAction>
-                      <IconButton edge="end" onClick={() => window.open(material.file_url, '_blank')}>
-                        <DownloadIcon sx={{ color: theme.palette.info.main }} />
-                      </IconButton>
-                      <IconButton edge="end" color="error" onClick={() => openDeleteDialog(material)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
+                  <ListItem
+  sx={{
+    px: { xs: 2, sm: 3 },
+    py: { xs: 1.5, sm: 2 },
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap', // allows wrapping if too tight
+    gap: 2,
+  }}
+>
+  {/* Left: Icon + Text */}
+  <Box
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      minWidth: 0,
+      flex: 1,
+    }}
+  >
+    <ListItemIcon sx={{ minWidth: 36 }}>
+      {getFileIcon(material.file_url)}
+    </ListItemIcon>
+    <ListItemText
+      primary={material.name}
+      secondary={material.description || 'No description'}
+      sx={{
+        '& .MuiListItemText-primary': {
+          fontSize: { xs: '0.9rem', sm: '1rem' },
+          fontWeight: 500,
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        },
+        '& .MuiListItemText-secondary': {
+          fontSize: { xs: '0.8rem', sm: '0.875rem' },
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        },
+      }}
+    />
+  </Box>
+
+  {/* Right: Chip + Icons */}
+  <Box
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 1,
+      flexShrink: 0,
+    }}
+  >
+    <Chip
+      label={classInfo.subjects.subject_name}
+      size="small"
+      sx={{
+        fontSize: { xs: '0.7rem', sm: '0.75rem' },
+        height: { xs: 24, sm: 28 },
+      }}
+    />
+    <IconButton
+      size={isMobile ? 'small' : 'medium'}
+      onClick={() => window.open(material.file_url, '_blank')}
+      sx={{ color: theme.palette.info.main }}
+    >
+      <DownloadIcon fontSize={isMobile ? 'small' : 'medium'} />
+    </IconButton>
+    <IconButton
+      size={isMobile ? 'small' : 'medium'}
+      color="error"
+      onClick={() => openDeleteDialog(material)}
+    >
+      <DeleteIcon fontSize={isMobile ? 'small' : 'medium'} />
+    </IconButton>
+  </Box>
+</ListItem>
+
+
                   {index < filteredMaterials.length - 1 && <Divider />}
                 </React.Fragment>
               ))}
               {filteredMaterials.length === 0 && (
-                <ListItem><ListItemText primary="No study materials found." /></ListItem>
+                <ListItem sx={{ py: 4, justifyContent: 'center' }}>
+                  <ListItemText 
+                    primary="No study materials found." 
+                    sx={{ textAlign: 'center' }}
+                  />
+                </ListItem>
               )}
             </List>
           </Paper>
@@ -257,24 +390,96 @@ const StudyMaterial = () => {
         {/* Upload Modal */}
         <Modal open={openModal} onClose={() => setOpenModal(false)}>
           <Box sx={modalStyle}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-              <Typography variant="h6">Upload Study Material</Typography>
-              <IconButton onClick={() => setOpenModal(false)}><CloseIcon /></IconButton>
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              mb: { xs: 2, sm: 3 }
+            }}>
+              <Typography 
+                variant={isMobile ? "h6" : "h5"} 
+                sx={{ fontWeight: 600 }}
+              >
+                Upload Study Material
+              </Typography>
+              <IconButton onClick={() => setOpenModal(false)}>
+                <CloseIcon />
+              </IconButton>
             </Box>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <TextField label="Name" name="name" value={formData.name} onChange={handleInputChange} required />
-              <TextField label="Description" name="description" multiline rows={3} value={formData.description} onChange={handleInputChange} />
+            <form 
+              onSubmit={handleSubmit} 
+              style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: isMobile ? '12px' : '16px' 
+              }}
+            >
+              <TextField 
+                label="Name" 
+                name="name" 
+                value={formData.name} 
+                onChange={handleInputChange} 
+                required 
+                size={isMobile ? "small" : "medium"}
+                fullWidth
+              />
+              <TextField 
+                label="Description" 
+                name="description" 
+                multiline 
+                rows={isMobile ? 2 : 3} 
+                value={formData.description} 
+                onChange={handleInputChange} 
+                size={isMobile ? "small" : "medium"}
+                fullWidth
+              />
               <Box>
-                <Typography variant="body2">Attach File</Typography>
-                <input type="file" onChange={handleFileChange} required />
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    mb: 1, 
+                    fontSize: { xs: '0.8rem', sm: '0.875rem' } 
+                  }}
+                >
+                  Attach File
+                </Typography>
+                <input 
+                  type="file" 
+                  onChange={handleFileChange} 
+                  required 
+                  style={{ 
+                    width: '100%', 
+                    padding: isMobile ? '6px' : '8px',
+                    fontSize: isMobile ? '0.8rem' : '0.875rem'
+                  }}
+                />
               </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-                <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'flex-end', 
+                gap: 1, 
+                mt: 1,
+                flexDirection: { xs: 'column-reverse', sm: 'row' }
+              }}>
+                <Button 
+                  onClick={() => setOpenModal(false)}
+                  sx={{ 
+                    width: { xs: '100%', sm: 'auto' },
+                    order: { xs: 2, sm: 1 }
+                  }}
+                >
+                  Cancel
+                </Button>
                 <Button
                   type="submit"
                   variant="contained"
                   disabled={uploading}
-                  sx={{ bgcolor: theme.palette.primary.main, '&:hover': { bgcolor: theme.palette.primary.dark } }}
+                  sx={{ 
+                    bgcolor: theme.palette.primary.main, 
+                    width: { xs: '100%', sm: 'auto' },
+                    order: { xs: 1, sm: 2 },
+                    '&:hover': { bgcolor: theme.palette.primary.dark } 
+                  }}
                 >
                   {uploading ? <CircularProgress size={24} /> : 'Upload'}
                 </Button>
@@ -284,16 +489,43 @@ const StudyMaterial = () => {
         </Modal>
 
         {/* Delete Confirmation Dialog */}
-        <Dialog open={deleteDialog} onClose={() => setDeleteDialog(false)}>
-          <DialogTitle>Confirm Delete</DialogTitle>
+        <Dialog 
+          open={deleteDialog} 
+          onClose={() => setDeleteDialog(false)}
+          maxWidth="sm"
+          fullWidth
+          PaperProps={{
+            sx: { 
+              m: { xs: 2, sm: 3 },
+              width: { xs: 'calc(100% - 32px)', sm: 'auto' }
+            }
+          }}
+        >
+          <DialogTitle sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}>
+            Confirm Delete
+          </DialogTitle>
           <DialogContent>
-            <DialogContentText>
+            <DialogContentText sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
               Are you sure you want to delete this resource? This action cannot be undone.
             </DialogContentText>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setDeleteDialog(false)}>Cancel</Button>
-            <Button onClick={handleDelete} color="error" disabled={deleting}>
+          <DialogActions sx={{ 
+            p: { xs: 2, sm: 3 }, 
+            gap: { xs: 1, sm: 0 },
+            flexDirection: { xs: 'column-reverse', sm: 'row' }
+          }}>
+            <Button 
+              onClick={() => setDeleteDialog(false)}
+              sx={{ width: { xs: '100%', sm: 'auto' } }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleDelete} 
+              color="error" 
+              disabled={deleting}
+              sx={{ width: { xs: '100%', sm: 'auto' } }}
+            >
               {deleting ? 'Deleting...' : 'Delete'}
             </Button>
           </DialogActions>
